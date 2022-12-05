@@ -5,3 +5,28 @@ body
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     text-align: center;
 }
+
+#types {
+    width: 80%;
+    height: 200px;
+    overflow: hidden; 
+    overflow-y: scroll;
+    margin: auto;
+    background-color: #001536;
+    border: 10px solid white;
+}
+
+.info {
+    font-size: 10px;
+}
+
+.type {
+    text-align: left;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.type-title {
+    background-color: green;
+    border: 5px solid white;
+}
