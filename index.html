@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Clouds Generator Previewer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Simple Clouds Generation Previewer</h1>
+    <p>Previews Simple Clouds cloud type generation</p>
+    <canvas id="canvas", width="513px", height="513px"></canvas>
+    <p id="info"></p>
+    <input type="range" min="1" max="32" value="1" id="scale">
+    <p id="scaleInfo"></p>
+    <script src="simplexNoise.js"></script>
+    <script src="script.js"></script>
+    <button type="button", onclick="refresh()">Refresh</button>
+</body>
+</html>
