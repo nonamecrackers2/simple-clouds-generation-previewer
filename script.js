@@ -1,9 +1,12 @@
 class Type
 {
-    constructor(name, color, scale, areaScale, priority)
+    constructor(name, color, scale, areaScale, priority, seed = null)
     {
+        if (seed == null)
+            this.seed = Date.now();
+        else
+            this.seed = seed;
         this.name = name;
-        this.seed = Math.random();
         this.sampler = openSimplexNoise(this.seed);
         this.color = color;
         this.scale = scale;
@@ -20,9 +23,18 @@ class Type
     {
         return 'Scale: ' + this.scale + '; Area Scale: ' + this.areaScale + '; Priority: ' + this.priority;
     }
+
+    isSameAs(other)
+    {
+        if (other.scale == this.scale && other.areaScale == this.areaScale && other.priority == this.priority) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
-function getTypeAt(x, y)
+function getTypeAt(types, x, y)
 {
     var currentValue = null;
     var currentType = null;
@@ -46,6 +58,9 @@ function rgbToHex(r, g, b)
 
 function onTooltip(div)
 {
+    var allTypes = types;
+    if (inputted != null)
+        allTypes = types.concat([inputted]);
     div.onmousemove = function(e) 
     {
         var x=e.pageX+20;
@@ -61,7 +76,7 @@ function onTooltip(div)
         var sampleX = (e.pageX - rect.left - window.scrollX - centerX - borderX) * 16 * scale;
         var sampleY = (e.pageY - rect.top - window.scrollY - centerY - borderY) * 16 * scale;
         //document.getElementById('debug').innerHTML = (e.pageY - rect.top - window.scrollY - centerY - borderY);
-        var type = getTypeAt(sampleX, sampleY);
+        var type = getTypeAt(allTypes, sampleX, sampleY);
         if (type != null)
         {
             tooltip.innerHTML = type.name;
@@ -75,42 +90,119 @@ function onTooltip(div)
     window.onscroll = updatePos(div);
 }
 
+function getInputtedType()
+{
+    var name = document.getElementById('typeName').value;
+    var scaleInput = document.getElementById('typeScale').value;
+    var areaScale = document.getElementById('typeAreaScale').value;
+    var priority = document.getElementById('typePriority').value;
+    if (name.length != 0)
+    {
+        scaleValue = scaleInput.length > 0 ? parseFloat(scaleInput) : 0;
+        areaScaleValue = areaScale.length > 0 ? parseFloat(areaScale) : 0;
+        priorityValue = priority.length > 0 ? parseFloat(priority) : 0;
+        var lastSeed = null;
+        if (inputted != null) {
+            lastSeed = inputted.seed;
+        }
+        inputted = new Type(name, [Math.random() * 255, Math.random() * 255, Math.random() * 255], scaleValue, areaScaleValue, priorityValue, lastSeed);
+    }
+    else
+    {
+        inputted = null;
+    }
+    addTypesToWindow();
+    draw();
+}
+
+function addTypesToWindow()
+{
+    for (var i = 0; i < types.length; i++)
+    {
+        var type = types[i];
+        var r = type.color[0];
+        var g = type.color[1];
+        var b = type.color[2];
+
+        const prev = document.getElementById(type.name);
+        if (prev != null)
+            prev.remove();
+
+        const div = document.createElement('div');
+        div.setAttribute('id', type.name);
+        div.setAttribute('class', 'type');
+        const typesElement = document.getElementById('types');
+        typesElement.appendChild(div);
+
+        const title = document.createElement('h3');
+        title.innerHTML = type.name;
+        var textColor;
+        if (r*0.299 + g*0.587 + b*0.114 > 186) {
+            textColor = '#000000';
+        } else {
+            textColor = '#ffffff';
+        }
+        title.setAttribute('style', 'border: 5px solid white; background-color: ' + rgbToHex(r, g, b) + '; color: ' + textColor + ';');
+        removeButton = document.createElement('button');
+        removeButton.innerHTML = 'Remove';
+        removeButton.setAttribute('type', 'button');
+        removeButton.setAttribute('onclick', 'removeType("' + type.name + '")');
+        removeButton.setAttribute('style', 'float: right;')
+        title.appendChild(removeButton)
+        
+        div.appendChild(title);
+
+        var description = document.createElement('p');
+        description.innerHTML = type.buildDescription();
+        description.setAttribute('style', 'margin-top: 0px; padding: 0px;');
+        div.appendChild(description);
+    }
+}
+
+function addType()
+{
+    if (inputted != null)
+    {
+        var flag = true;
+        for (var i = 0; i < types.length; i++)
+        {
+            var type = types[i];
+            if (type.isSameAs(inputted))
+            {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            types.push(inputted);
+            addTypesToWindow();
+            draw();
+        }
+    }
+}
+
+function removeType(typeName)
+{
+    for (var i = 0; i < types.length; i++)
+    {
+        var type = types[i];
+        if (type.name == typeName)
+        {
+            types.splice(i, 1);
+            addTypesToWindow();
+            draw();
+            break;
+        }
+    }
+}
+
+var inputted = null;
 const types = [
     new Type('Empty', [0, 0, 0], 1000.0, 0.3, 1.0),
     new Type('Cumulus', [255, 0, 0], 2000.0, 0.2, 1.0),
     new Type('Stratocumulus', [0, 255, 0], 5000.0, 0.5, 1.0),
     new Type('test4', [255, 255, 255], 10000.0, 0.0, 10.0)
 ];
-
-for (var i = 0; i < types.length; i++)
-{
-    var type = types[i];
-    var r = type.color[0];
-    var g = type.color[1];
-    var b = type.color[2];
-
-    const div = document.createElement('div');
-    div.setAttribute('id', type.name);
-    div.setAttribute('class', 'type');
-    document.getElementById('types').appendChild(div);
-
-    const title = document.createElement('h3');
-    title.innerHTML = type.name;
-    var textColor;
-    if (r*0.299 + g*0.587 + b*0.114 > 186) {
-        textColor = '#000000';
-    }
-    else {
-        textColor = '#ffffff';
-    }
-    title.setAttribute('style', 'border: 5px solid white; background-color: ' + rgbToHex(r, g, b) + '; color: ' + textColor + ';');
-    div.appendChild(title);
-
-    var description = document.createElement('p');
-    description.innerHTML = type.buildDescription();
-    description.setAttribute('style', 'margin-top: 0px; padding: 0px;');
-    div.appendChild(description);
-}
 
 const canvas = document.getElementById('canvas');
 const width = canvas.width;
@@ -134,10 +226,18 @@ slider.oninput = function()
     draw();
 }
 
-draw();
+getInputtedType();
+document.getElementById('typeName').addEventListener('change', getInputtedType);
+document.getElementById('typeScale').addEventListener('input', getInputtedType);
+document.getElementById('typeAreaScale').addEventListener('input', getInputtedType);
+document.getElementById('typePriority').addEventListener('input', getInputtedType);
 
 function draw()
 {
+    var allTypes = types;
+    if (inputted != null)
+        allTypes = types.concat([inputted]);
+
     var centerX = Math.floor(width / 2.0);
     var centerY = Math.floor(height / 2.0);
     var radius = Math.floor((width - 1.0) / 2.0);
@@ -149,7 +249,7 @@ function draw()
         {
             var actualX = (x - centerX) * 16.0 * scale;
             var actualY = (y - centerY) * 16.0 * scale;
-            var type = getTypeAt(actualX, actualY);
+            var type = getTypeAt(allTypes, actualX, actualY);
             if (type != null)
             {
                 if (scale != 1 && isPointAtBox(centerX, centerY, radius, x, y, scale, visibleBorder))
@@ -166,6 +266,13 @@ function draw()
                     imageData.data[index++] = type.color[2];
                     imageData.data[index++] = 255;
                 }
+            }
+            else
+            {
+                imageData.data[index++] = 0;
+                imageData.data[index++] = 0;
+                imageData.data[index++] = 0;
+                imageData.data[index++] = 255;
             }
         }
     }
@@ -211,8 +318,13 @@ function refresh()
 {
     for (var i = 0; i < types.length; i++)
     {
-        types[i].seed = Math.random();
+        types[i].seed = Date.now();
         types[i].sampler = openSimplexNoise(types[i].seed);
+    }
+    if (inputted != null)
+    {
+        inputted.seed = Date.now();
+        inputted.sampler = openSimplexNoise(inputted.seed);
     }
     draw();
 }

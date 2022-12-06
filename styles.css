@@ -37,6 +37,28 @@ hr {
     display: none;
 }
 
+#type-builder {
+    width: 600px;
+    border: 10px solid white;
+    margin: auto;
+    margin-bottom: 20px;
+    background-color: #001536;
+}
+
+#type-builder input {
+    width: 40px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#type-builder button {
+    width: 80px;
+}
+
+.type-form {
+    margin: 10px;
+}
+
 .info {
     font-size: 10px;
 }
