@@ -90,7 +90,7 @@ function onTooltip(div)
     window.onscroll = updatePos(div);
 }
 
-function getInputtedType()
+function buildInputtedType()
 {
     var name = document.getElementById('typeName').value;
     var scaleInput = document.getElementById('typeScale').value;
@@ -111,11 +111,11 @@ function getInputtedType()
     {
         inputted = null;
     }
-    addTypesToWindow();
+    buildTypesWindow();
     draw();
 }
 
-function addTypesToWindow()
+function buildTypesWindow()
 {
     for (var i = 0; i < types.length; i++)
     {
@@ -167,7 +167,7 @@ function addType()
         for (var i = 0; i < types.length; i++)
         {
             var type = types[i];
-            if (type.isSameAs(inputted))
+            if (type.name == inputted.name || type.isSameAs(inputted))
             {
                 flag = false;
                 break;
@@ -175,10 +175,15 @@ function addType()
         }
         if (flag) {
             types.push(inputted);
-            addTypesToWindow();
+            buildTypesWindow();
             draw();
         }
     }
+    document.getElementById('typeName').value = '';
+    document.getElementById('typeScale').value = '';
+    document.getElementById('typeAreaScale').value = '';
+    document.getElementById('typePriority').value = '';
+    inputted = null;
 }
 
 function removeType(typeName)
@@ -189,7 +194,11 @@ function removeType(typeName)
         if (type.name == typeName)
         {
             types.splice(i, 1);
-            addTypesToWindow();
+            const prev = document.getElementById(type.name);
+            if (prev != null) {
+                prev.remove();
+            }
+            buildTypesWindow();
             draw();
             break;
         }
@@ -200,8 +209,7 @@ var inputted = null;
 const types = [
     new Type('Empty', [0, 0, 0], 1000.0, 0.3, 1.0),
     new Type('Cumulus', [255, 0, 0], 2000.0, 0.2, 1.0),
-    new Type('Stratocumulus', [0, 255, 0], 5000.0, 0.5, 1.0),
-    new Type('test4', [255, 255, 255], 10000.0, 0.0, 10.0)
+    new Type('Stratocumulus', [0, 255, 0], 5000.0, 0.5, 1.0)
 ];
 
 const canvas = document.getElementById('canvas');
@@ -226,11 +234,11 @@ slider.oninput = function()
     draw();
 }
 
-getInputtedType();
-document.getElementById('typeName').addEventListener('change', getInputtedType);
-document.getElementById('typeScale').addEventListener('input', getInputtedType);
-document.getElementById('typeAreaScale').addEventListener('input', getInputtedType);
-document.getElementById('typePriority').addEventListener('input', getInputtedType);
+buildInputtedType();
+document.getElementById('typeName').addEventListener('change', buildInputtedType);
+document.getElementById('typeScale').addEventListener('input', buildInputtedType);
+document.getElementById('typeAreaScale').addEventListener('input', buildInputtedType);
+document.getElementById('typePriority').addEventListener('input', buildInputtedType);
 
 function draw()
 {
