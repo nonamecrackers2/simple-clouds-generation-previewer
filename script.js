@@ -87,7 +87,6 @@ function onTooltip(div)
     div.onmouseout = function() {
         document.getElementById('tooltip').style.display='none';
     };
-    window.onscroll = updatePos(div);
 }
 
 function buildInputtedType()
