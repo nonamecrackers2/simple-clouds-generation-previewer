@@ -10,21 +10,24 @@
 <body>
     <h1>Simple Clouds Generation Previewer</h1>
     <p>Previews Simple Clouds cloud type generation</p>
-    <canvas id="canvas", width="513px", height="513px"></canvas>
-    <br>
-    <h2>Types</h2>
-    <div id="types">
-        <div class="type">
-            <h3 class="type-title">Type Name</h3>
-            <p>Settings</p>
-        </div>
-    </div>
+    <hr>
+    <p id="debug"></p>
+    <canvas id="canvas", onmouseover="onTooltip(this);", width="513px", height="513px"></canvas>
+    <hr>
     <p id="info"></p>
     <button type="button", onclick="refresh()">Refresh</button><input type="range" min="1" max="32" value="1" id="scale">
     <p id="scaleInfo"></p>
+    <hr>
+    <h2>Types</h2>
+    <div id="types"></div>
+    <hr>
+    <p class="info">May not accurately reflect what is in game. Center box higlight represents the 513x513 viewable area in game.</p>
+    
+    <span id="tooltip">Hello</span>
+    
+    <div id="copyright">© 2022 - <?php echo date('Y'); ?> nonamecrackers2 - All Rights Reserved.</div>
+
     <script src="simplexNoise.js"></script>
     <script src="script.js"></script>
-    <p class="info">May not accurately reflect what is in game. Center box higlight represents the 513x513 viewable area in game.</p>
-    <br>
 </body>
 </html>

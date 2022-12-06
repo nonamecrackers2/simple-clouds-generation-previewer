@@ -6,14 +6,35 @@ body
     text-align: center;
 }
 
+canvas {
+    border: 10px solid white;
+}
+
+hr {
+    margin: 20px auto;
+    width: 800px;
+    height: 2px;
+    background-color: white;
+}
+
 #types {
-    width: 80%;
-    height: 200px;
+    width: 600px;
+    height: 195px;
     overflow: hidden; 
     overflow-y: scroll;
     margin: auto;
     background-color: #001536;
     border: 10px solid white;
+}
+
+#tooltip {
+    background-color: white;
+    color: black;
+    border: 5px solid white;
+    padding-left: 5px;
+    padding-right: 5px;
+    position: absolute;
+    display: none;
 }
 
 .info {
@@ -24,9 +45,4 @@ body
     text-align: left;
     margin-left: 20px;
     margin-right: 20px;
-}
-
-.type-title {
-    background-color: green;
-    border: 5px solid white;
 }
